@@ -1,0 +1,17 @@
+---
+- name: Deploy Docker Compose 
+  include_tasks: single.yml
+  when: 
+    - docker_compose_file is defined
+    - docker_compose_files is undefined
+
+- name: Deploy Multiple Composes
+  include_tasks: single.yml
+  loop: "{{ docker_compose_files if docker_compose_files is defined else [] }}"
+  loop_control:
+    loop_var: docker_compose_item_file
+  vars:
+    docker_compose_file: "{{ docker_compose_item_file.docker_compose_file }}"
+    docker_compose_env: "{{ docker_compose_item_file.docker_compose_env if docker_compose_item_file.docker_compose_env is defined else omit }}"
+  when: 
+    - docker_compose_files is defined
